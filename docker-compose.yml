@@ -1,0 +1,29 @@
+version: "3"
+
+volumes:
+  postgres_data:
+    driver: local
+  postgres_test_data:
+    driver: local
+
+services:
+  postgres:
+    image: postgres:13
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    environment:
+      POSTGRES_SERVER: jobboard
+      POSTGRES_DB: jobboard
+      POSTGRES_USER: ibrahimoued
+      POSTGRES_PASSWORD: 1234
+    ports:
+      - 5432:5432
+  pgadmin:
+    image: dpage/pgadmin4
+    environment:
+      PGADMIN_DEFAULT_EMAIL: "admin@localhost.com"
+      PGADMIN_DEFAULT_PASSWORD: "admin"
+    ports:
+      - "16543:80"
+    depends_on:
+      - postgres

@@ -1,0 +1,15 @@
+fastapi
+uvicorn
+
+# for databases
+sqlalchemy
+psycopg
+
+# For env variables
+python-dotenv
+
+# For the email validation
+pydantic[email]
+
+# Password hashing
+passlib[bcrypt]
