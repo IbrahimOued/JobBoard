@@ -1,23 +1,27 @@
-from db.session import get_db
-from api.base import api_router
-from db.base import Base
+
 from typing import Any
 from typing import Generator
-
 import pytest
 from fastapi import FastAPI
 from fastapi.testclient import TestClient
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
 
-import sys
 import os
+import sys
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
-# This is to include backend dir in sys.path so that we can import from fb, main.py
+
+from db.base import Base
+from db.session import get_db
+from api.base import api_router
+
+
+
+# This is to include backend dir in sys.path so that we can import from db, main.py
 
 
 def start_application():
-    app: FastAPI()
+    app=FastAPI()
     app.include_router(api_router)
     return app
 
@@ -28,6 +32,17 @@ engine = create_engine(SQLALCHEMY_DATABASE_URL, connect_args={
 
 # Use connect_args parameter only with sqlite
 SessionTesting = sessionmaker(autocommit=False, autoflush=False, bind=engine)
+
+
+@pytest.fixture(scope='function')
+def app() -> Generator[FastAPI, Any, None]:
+    """
+    Create a fresh database on each test case.
+    """
+    Base.metadata.create_all(engine)  # create the tables
+    _app = start_application()
+    yield _app
+    Base.metadata.drop_all(engine)
 
 
 @pytest.fixture(scope="function")
